@@ -11,6 +11,7 @@ import '../utils/formatters.dart';
 import '../widgets/common_widgets.dart';
 import 'new_purchase_screen.dart';
 import 'product_management_screen.dart';
+import '../main.dart'; // Para acessar _MainNavigationScreenState
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -729,19 +730,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateToShoppingList(BuildContext context) {
-    // Navegar para aba Lista (índice 2)
-    // Como estamos usando bottom navigation, precisamos acessar o estado pai
-    // Por enquanto, apenas mostramos uma mensagem
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Use a aba "Lista" na navegação inferior')),
-    );
-  }
+      // Navegar para aba Lista (índice 2) via estado pai
+      final mainNavState = context.findAncestorStateOfType<MainNavigationScreenState>();
+      if (mainNavState != null) {
+        mainNavState.onDestinationSelected(2);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Use a aba "Lista" na navegação inferior')),
+        );
+      }
+    }
 
-  void _navigateToReports(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Use a aba "Relatórios" na navegação inferior')),
-    );
-  }
+    void _navigateToReports(BuildContext context) {
+      final mainNavState = context.findAncestorStateOfType<MainNavigationScreenState>();
+      if (mainNavState != null) {
+        mainNavState.onDestinationSelected(3);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Use a aba "Relatórios" na navegação inferior')),
+        );
+      }
+    }
 
   void _addToShoppingList(Product product) {
     final added = context.read<AppProvider>().addProductToShoppingList(product);

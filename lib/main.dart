@@ -82,10 +82,10 @@ class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
 
   @override
-  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
+    State<MainNavigationScreen> createState() => MainNavigationScreenState();
 }
 
-class _MainNavigationScreenState extends State<MainNavigationScreen> {
+class MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
 
   static final List<Widget> _screens = [
@@ -118,7 +118,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     ),
   ];
 
-  void _onDestinationSelected(int index) {
+  void onDestinationSelected(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -130,7 +130,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       body: _screens[_selectedIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: _onDestinationSelected,
+              onDestinationSelected: onDestinationSelected,
         destinations: _destinations,
         height: 70,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,

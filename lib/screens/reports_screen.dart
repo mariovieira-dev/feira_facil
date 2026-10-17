@@ -151,39 +151,48 @@ class _ReportsScreenState extends State<ReportsScreen> with SingleTickerProvider
                 ),
                 const SizedBox(height: 16),
                 
-                // Lista de categorias
-                ...categoryTotals.entries.map((entry) {
-                  final percent = total > 0 ? (entry.value / total) * 100 : 0;
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                        child: Icon(
-                          entry.key.icon,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      title: Text(entry.key.label),
-                      trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            CurrencyFormatter.format(entry.value),
-                            style: const TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            '${percent.toStringAsFixed(1)}%',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
+                // Lista de categorias ordenadas por porcentagem (maior para menor)
+                                ...(() {
+                                  final sortedCategories = categoryTotals.entries.toList()
+                                    ..sort((a, b) {
+                                      final percentA = total > 0 ? (a.value / total) * 100 : 0;
+                                      final percentB = total > 0 ? (b.value / total) * 100 : 0;
+                                      return percentB.compareTo(percentA);
+                                    });
+                  
+                                  return sortedCategories.map((entry) {
+                                    final percent = total > 0 ? (entry.value / total) * 100 : 0;
+                                    return Card(
+                                      margin: const EdgeInsets.only(bottom: 8),
+                                      child: ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                                          child: Icon(
+                                            entry.key.icon,
+                                            color: Theme.of(context).colorScheme.primary,
+                                          ),
+                                        ),
+                                        title: Text(entry.key.label),
+                                        trailing: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              CurrencyFormatter.format(entry.value),
+                                              style: const TextStyle(fontWeight: FontWeight.w600),
+                                            ),
+                                            Text(
+                                              '${percent.toStringAsFixed(1)}%',
+                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }).toList();
+                                }()),
               ] else ...[
                 EmptyStateWidget(
                   icon: Icons.receipt_long_outlined,
