@@ -4,11 +4,13 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../models/product.dart';
 import '../models/purchase.dart';
 import '../providers/app_provider.dart';
 import '../utils/formatters.dart';
 import '../widgets/common_widgets.dart';
+import '../services/auth_service.dart';
 import 'new_purchase_screen.dart';
 import 'product_management_screen.dart';
 import '../main.dart'; // Para acessar _MainNavigationScreenState
@@ -55,19 +57,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     // Orçamento mensal
                     _buildBudgetCard(provider),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Essenciais faltando
                     _buildMissingEssentials(provider),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Últimas compras
                     _buildRecentPurchases(provider),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Ações rápidas
                     _buildQuickActions(context),
                   ],
@@ -110,9 +112,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(width: 8),
                   Text(
                     'Orçamento Mensal',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -153,9 +154,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 8),
                     Text(
                       'Orçamento ${DateFormatter.formatMonthYear(DateTime.now())}',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -189,7 +189,9 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8),
             LinearProgressIndicator(
               value: progress,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              backgroundColor: Theme.of(context)
+                  .colorScheme
+                  .surfaceContainerHighest,
               valueColor: AlwaysStoppedAnimation<Color>(
                 isOver
                     ? Theme.of(context).colorScheme.error
@@ -215,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildMissingEssentials(AppProvider provider) {
     final missing = provider.getMissingEssentialsForCurrentMonth();
-    
+
     if (missing.isEmpty) {
       return Card(
         child: Padding(
@@ -234,9 +236,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       'Todos os essenciais comprados!',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     Text(
                       'Parabéns! Não falta nada essencial este mês.',
@@ -271,9 +272,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 8),
                     Text(
                       'Essenciais Faltando (${missing.length})',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -312,10 +312,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 product.name,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.onErrorContainer,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onErrorContainer,
+                                    ),
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -323,9 +326,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 'Essencial',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onErrorContainer.withValues(alpha: 0.7),
-                                ),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onErrorContainer
+                                          .withValues(alpha: 0.7),
+                                    ),
                               ),
                             ],
                           ),
@@ -344,7 +351,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildRecentPurchases(AppProvider provider) {
     final purchases = provider.purchases.take(5).toList();
-    
+
     if (purchases.isEmpty) {
       return Card(
         child: Padding(
@@ -354,7 +361,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Icon(
                 Icons.receipt_long_outlined,
                 size: 48,
-                color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                color: Theme.of(context).colorScheme.onSurfaceVariant
+                    .withValues(alpha: 0.5),
               ),
               const SizedBox(height: 12),
               Text(
@@ -384,9 +392,8 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Text(
               'Últimas Compras',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
             ),
             TextButton(
               onPressed: () => _navigateToReports(context),
@@ -405,7 +412,9 @@ class _HomeScreenState extends State<HomeScreen> {
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  backgroundColor: Theme.of(context)
+                      .colorScheme
+                      .primaryContainer,
                   child: Icon(
                     Icons.store,
                     color: Theme.of(context).colorScheme.primary,
@@ -443,7 +452,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         FilledButton(
                           style: FilledButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.error,
+                            backgroundColor: Theme.of(context)
+                                .colorScheme
+                                .error,
                           ),
                           onPressed: () => Navigator.pop(dialogContext, true),
                           child: const Text('Excluir'),
@@ -452,11 +463,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
 
-                  if (confirmed != true || purchase.id == null || !context.mounted) {
+                  if (confirmed != true ||
+                      purchase.id == null ||
+                      !context.mounted) {
                     return;
                   }
 
-                  await context.read<AppProvider>().deletePurchase(purchase.id!);
+                  await context.read<AppProvider>().deletePurchase(
+                    purchase.id!,
+                  );
                   if (!context.mounted) return;
                   final error = context.read<AppProvider>().error;
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -483,9 +498,8 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Text(
           'Ações Rápidas',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         GridView.count(
@@ -520,7 +534,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Colors.orange,
               () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ProductManagementScreen()),
+                MaterialPageRoute(
+                  builder: (_) => const ProductManagementScreen(),
+                ),
               ),
             ),
             _buildActionCard(
@@ -556,9 +572,8 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 8),
               Text(
                 title,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -594,7 +609,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           FilledButton(
             onPressed: () {
-              final value = double.tryParse(controller.text.replaceAll(',', '.'));
+              final value = double.tryParse(
+                controller.text.replaceAll(',', '.'),
+              );
               if (value != null && value > 0) {
                 provider.setBudget(value);
                 Navigator.pop(context);
@@ -625,6 +642,11 @@ class _HomeScreenState extends State<HomeScreen> {
               title: const Text('Importar Dados (JSON)'),
               onTap: () => _importData(context),
             ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Sair da conta'),
+              onTap: () => _signOut(context),
+            ),
           ],
         ),
         actions: [
@@ -635,6 +657,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _signOut(BuildContext context) async {
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    navigator.pop();
+    try {
+      await AuthService().signOut();
+    } on AuthServiceException catch (error) {
+      messenger.showSnackBar(SnackBar(content: Text(error.message)));
+    }
   }
 
   Future<void> _exportData(BuildContext context) async {
@@ -649,7 +682,8 @@ class _HomeScreenState extends State<HomeScreen> {
       final bytes = Uint8List.fromList(utf8.encode(jsonString));
 
       final now = DateTime.now();
-      final stamp = '${now.year}'
+      final stamp =
+          '${now.year}'
           '${now.month.toString().padLeft(2, '0')}'
           '${now.day.toString().padLeft(2, '0')}';
 
@@ -662,13 +696,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
       messenger.showSnackBar(
         SnackBar(
-          content: Text(path == null ? 'Exportação cancelada' : 'Backup salvo com sucesso'),
+          content: Text(
+            path == null ? 'Exportação cancelada' : 'Backup salvo com sucesso',
+          ),
         ),
       );
     } catch (e) {
-      messenger.showSnackBar(
-        SnackBar(content: Text('Erro ao exportar: $e')),
-      );
+      messenger.showSnackBar(SnackBar(content: Text('Erro ao exportar: $e')));
     }
   }
 
@@ -688,7 +722,9 @@ class _HomeScreenState extends State<HomeScreen> {
       final Uint8List bytes = await file.readAsBytes();
 
       final decoded = jsonDecode(utf8.decode(bytes));
-      if (decoded is! Map || decoded['products'] is! List || decoded['purchases'] is! List) {
+      if (decoded is! Map ||
+          decoded['products'] is! List ||
+          decoded['purchases'] is! List) {
         throw const FormatException('Arquivo de backup inválido');
       }
       final data = Map<String, dynamic>.from(decoded);
@@ -723,34 +759,38 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     } catch (e) {
-      messenger.showSnackBar(
-        SnackBar(content: Text('Erro ao importar: $e')),
-      );
+      messenger.showSnackBar(SnackBar(content: Text('Erro ao importar: $e')));
     }
   }
 
   void _navigateToShoppingList(BuildContext context) {
-      // Navegar para aba Lista (índice 2) via estado pai
-      final mainNavState = context.findAncestorStateOfType<MainNavigationScreenState>();
-      if (mainNavState != null) {
-        mainNavState.onDestinationSelected(2);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Use a aba "Lista" na navegação inferior')),
-        );
-      }
+    // Navegar para aba Lista (índice 2) via estado pai
+    final mainNavState = context
+        .findAncestorStateOfType<MainNavigationScreenState>();
+    if (mainNavState != null) {
+      mainNavState.onDestinationSelected(2);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Use a aba "Lista" na navegação inferior'),
+        ),
+      );
     }
+  }
 
-    void _navigateToReports(BuildContext context) {
-      final mainNavState = context.findAncestorStateOfType<MainNavigationScreenState>();
-      if (mainNavState != null) {
-        mainNavState.onDestinationSelected(3);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Use a aba "Relatórios" na navegação inferior')),
-        );
-      }
+  void _navigateToReports(BuildContext context) {
+    final mainNavState = context
+        .findAncestorStateOfType<MainNavigationScreenState>();
+    if (mainNavState != null) {
+      mainNavState.onDestinationSelected(3);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Use a aba "Relatórios" na navegação inferior'),
+        ),
+      );
     }
+  }
 
   void _addToShoppingList(Product product) {
     final added = context.read<AppProvider>().addProductToShoppingList(product);
@@ -784,9 +824,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     'Detalhes da Compra',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
@@ -803,9 +842,8 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 8),
               Text(
                 'Itens (${purchase.items.length})',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               Expanded(

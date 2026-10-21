@@ -17,7 +17,9 @@ Ajudar famílias a planejar melhor as compras, evitar esquecimentos e economizar
 ## 🛠️ Tecnologias
 
 - [Flutter](https://flutter.dev/) e Dart
-- [ ] Armazenamento local: `[ex.: SQLite / Hive / shared_preferences]`
+- Firebase Authentication (e-mail e senha)
+- Cloud Firestore para dados separados por usuário
+- SQLite local existente (os registros antigos permanecem no dispositivo e não são migrados automaticamente)
 
 ## 🚀 Como executar
 
@@ -31,9 +33,18 @@ git clone [https://github.com/mariovieira-dev/feira_facil]
 # Instale as dependências
 flutter pub get
 
+# Configure o Firebase Authentication com o provedor E-mail/senha e crie o
+# banco Cloud Firestore no projeto configurado em lib/firebase_options.dart.
+# Publique as regras de acesso:
+firebase deploy --only firestore:rules
+
 # Execute o app (com um celular conectado ou emulador aberto)
 flutter run
 ```
+
+Após o cadastro ou login, os novos dados são armazenados em caminhos como
+`users/{uid}/products`, `users/{uid}/purchases/{purchaseId}/items` e
+`users/{uid}/budgets`. A conta começa sem copiar os dados antigos do SQLite.
 
 ## 🗺️ Próximos passos
 

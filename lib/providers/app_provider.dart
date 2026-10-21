@@ -1,28 +1,29 @@
 import 'package:flutter/foundation.dart' hide Category;
+
 import '../models/category.dart';
 import '../models/product.dart';
 import '../models/purchase.dart';
 import '../models/budget.dart';
-import '../database/database_helper.dart';
+import '../database/firestore_database_helper.dart';
 
 class AppProvider extends ChangeNotifier {
-  final DatabaseHelper _db = DatabaseHelper();
-  
+  final FirestoreDatabaseHelper _db = FirestoreDatabaseHelper();
+
   // Products
   List<Product> _products = [];
   List<Product> _essentialProducts = [];
   List<Product> _filteredProducts = [];
   String _searchQuery = '';
-  
+
   // Purchases
   List<Purchase> _purchases = [];
   List<Purchase> _currentMonthPurchases = [];
   Purchase? _currentPurchase;
-  
+
   // Budget
   MonthlyBudget? _currentMonthBudget;
   double _currentMonthSpent = 0.0;
-  
+
   // Loading states
   bool _isLoading = false;
   String? _error;
@@ -31,7 +32,8 @@ class AppProvider extends ChangeNotifier {
   final List<Product> _shoppingListAdditions = [];
 
   // Getters
-  List<Product> get products => _filteredProducts.isEmpty ? _products : _filteredProducts;
+  List<Product> get products =>
+      _filteredProducts.isEmpty ? _products : _filteredProducts;
   List<Product> get allProducts => _products;
   List<Product> get essentialProducts => _essentialProducts;
   List<Purchase> get purchases => _purchases;
@@ -42,7 +44,8 @@ class AppProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   String get searchQuery => _searchQuery;
-  List<Product> get shoppingListAdditions => List.unmodifiable(_shoppingListAdditions);
+  List<Product> get shoppingListAdditions =>
+      List.unmodifiable(_shoppingListAdditions);
 
   /// Adiciona um produto à lista de compras. Retorna false se já estava na lista.
   bool addProductToShoppingList(Product product) {
@@ -94,7 +97,9 @@ class AppProvider extends ChangeNotifier {
       _filteredProducts = [];
     } else {
       _filteredProducts = _products
-          .where((p) => p.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+          .where(
+            (p) => p.name.toLowerCase().contains(_searchQuery.toLowerCase()),
+          )
           .toList();
     }
     notifyListeners();
@@ -196,21 +201,19 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  
-void updateCurrentPurchaseDetails({
-  required DateTime date,
-  required String location,
-}) {
-  if (_currentPurchase == null) return;
+  void updateCurrentPurchaseDetails({
+    required DateTime date,
+    required String location,
+  }) {
+    if (_currentPurchase == null) return;
 
-  _currentPurchase = _currentPurchase!.copyWith(
-    date: date,
-    location: location.trim(),
-  );
+    _currentPurchase = _currentPurchase!.copyWith(
+      date: date,
+      location: location.trim(),
+    );
 
-  notifyListeners();
-}
-
+    notifyListeners();
+  }
 
   void addItemToCurrentPurchase(PurchaseItem item) {
     if (_currentPurchase != null) {
@@ -222,7 +225,9 @@ void updateCurrentPurchaseDetails({
   }
 
   void removeItemFromCurrentPurchase(int index) {
-    if (_currentPurchase != null && index >= 0 && index < _currentPurchase!.items.length) {
+    if (_currentPurchase != null &&
+        index >= 0 &&
+        index < _currentPurchase!.items.length) {
       final items = List<PurchaseItem>.from(_currentPurchase!.items);
       items.removeAt(index);
       _currentPurchase = _currentPurchase!.copyWith(items: items);
@@ -231,7 +236,9 @@ void updateCurrentPurchaseDetails({
   }
 
   void updateItemInCurrentPurchase(int index, PurchaseItem item) {
-    if (_currentPurchase != null && index >= 0 && index < _currentPurchase!.items.length) {
+    if (_currentPurchase != null &&
+        index >= 0 &&
+        index < _currentPurchase!.items.length) {
       final items = List<PurchaseItem>.from(_currentPurchase!.items);
       items[index] = item;
       _currentPurchase = _currentPurchase!.copyWith(items: items);
@@ -250,10 +257,10 @@ void updateCurrentPurchaseDetails({
       final id = await _db.insertPurchase(_currentPurchase!);
       final savedPurchase = _currentPurchase!.copyWith(id: id);
       _purchases.insert(0, savedPurchase);
-      
+
       // Recarregar dados do mês atual
       await _loadCurrentMonthData();
-      
+
       _currentPurchase = null;
       _setError(null);
     } catch (e) {
@@ -299,7 +306,7 @@ void updateCurrentPurchaseDetails({
       month: now.month,
       amount: amount,
     );
-    
+
     _setLoading(true);
     try {
       await _db.insertOrUpdateBudget(budget);
@@ -313,7 +320,9 @@ void updateCurrentPurchaseDetails({
   }
 
   double get budgetProgress {
-    if (_currentMonthBudget == null || _currentMonthBudget!.amount <= 0) return 0.0;
+    if (_currentMonthBudget == null || _currentMonthBudget!.amount <= 0) {
+      return 0.0;
+    }
     return (_currentMonthSpent / _currentMonthBudget!.amount).clamp(0.0, 1.0);
   }
 
@@ -324,11 +333,18 @@ void updateCurrentPurchaseDetails({
 
   // ==================== REPORTS ====================
 
-  Future<Map<Category, double>> getCategoryTotalsForMonth(int year, int month) async {
+  Future<Map<Category, double>> getCategoryTotalsForMonth(
+    int year,
+    int month,
+  ) async {
     return await _db.getTotalByCategoryInMonth(year, month);
   }
 
-  Future<List<Map<String, dynamic>>> getTopProductsForMonth(int year, int month, {int limit = 10}) async {
+  Future<List<Map<String, dynamic>>> getTopProductsForMonth(
+    int year,
+    int month, {
+    int limit = 10,
+  }) async {
     return await _db.getTopProducts(year, month, limit: limit);
   }
 
@@ -359,13 +375,13 @@ void updateCurrentPurchaseDetails({
 
   List<Product> getMissingEssentialsForCurrentMonth() {
     final purchasedProductIds = <int>{};
-    
+
     for (final purchase in _currentMonthPurchases) {
       for (final item in purchase.items) {
         purchasedProductIds.add(item.productId);
       }
     }
-    
+
     return _essentialProducts
         .where((p) => !purchasedProductIds.contains(p.id))
         .toList();
@@ -373,18 +389,22 @@ void updateCurrentPurchaseDetails({
 
   List<Product> getMostPurchasedProducts({int limit = 20}) {
     final productCounts = <int, int>{};
-    
+
     for (final purchase in _purchases) {
       for (final item in purchase.items) {
-      
-        productCounts[item.productId] = (productCounts[item.productId] ?? 0) + 1;
+        productCounts[item.productId] =
+            (productCounts[item.productId] ?? 0) + 1;
       }
     }
-    
-    final sortedProducts = _products.where((p) => productCounts[p.id!] != null).toList();
-    sortedProducts.sort((a, b) => (productCounts[b.id!] ?? 0).compareTo(productCounts[a.id!] ?? 0));
-    
+
+    final sortedProducts = _products
+        .where((p) => productCounts[p.id!] != null)
+        .toList();
+    sortedProducts.sort(
+      (a, b) =>
+          (productCounts[b.id!] ?? 0).compareTo(productCounts[a.id!] ?? 0),
+    );
+
     return sortedProducts.take(limit).toList();
   }
-
 }
